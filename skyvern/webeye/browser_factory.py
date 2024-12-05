@@ -280,9 +280,26 @@ async def _create_headful_chromium(
     browser_context = await playwright.chromium.launch_persistent_context(**browser_args)
     return browser_context, browser_artifacts, None
 
+async def _create_headful_firefox(
+    playwright: Playwright, **kwargs: dict
+) -> tuple[BrowserContext, BrowserArtifacts, BrowserCleanupFunc]:
+    browser_args = BrowserContextFactory.build_browser_args()
+    browser_args.update(
+        {
+            "headless": False,
+        }
+    )
+    browser_artifacts = BrowserContextFactory.build_browser_artifacts(har_path=browser_args["record_har_path"])
+    browser_context = await playwright.firefox.launch_persistent_context(**browser_args)
+    return browser_context, browser_artifacts, None
+
+
 
 BrowserContextFactory.register_type("chromium-headless", _create_headless_chromium)
 BrowserContextFactory.register_type("chromium-headful", _create_headful_chromium)
+BrowserContextFactory.register_type("firefox-headful", _create_headful_firefox)
+
+
 
 
 class BrowserState:

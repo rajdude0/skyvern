@@ -104,7 +104,11 @@ class Settings(BaseSettings):
     ENABLE_AZURE: bool = False
     ENABLE_AZURE_GPT4O_MINI: bool = False
     ENABLE_BEDROCK: bool = False
+<<<<<<< Updated upstream
     ENABLE_GEMINI: bool = False
+=======
+    ENABLE_OLLAMA: bool = False
+>>>>>>> Stashed changes
     # OPENAI
     OPENAI_API_KEY: str | None = None
     # ANTHROPIC

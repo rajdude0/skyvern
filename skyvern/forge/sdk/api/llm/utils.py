@@ -44,6 +44,35 @@ async def llm_messages_builder(
     return [{"role": "user", "content": messages}]
 
 
+
+def custom_prompt_formatter(messages, prompt_template_args=None):
+    contents = [msg["content"] for msg in messages if msg["role"] == "user"]
+    prompt = "\n".join([content["text"] for content in contents if content["type"] == "text"])
+    image = "".join([content["image_url"] for content in contents if content["type"] == "image_url"])
+    encoded_image = image.split(",")[-1]
+    # Build the payload
+    payload = {
+        "model": prompt_template_args.get("model", "llama3.2-vision"),
+        "stream": prompt_template_args.get("stream", False),
+        "prompt": prompt,
+        **({"image": encoded_image} if encoded_image else {}),
+        "options": prompt_template_args.get("options", {})
+    }
+    return payload
+
+# # Register the custom formatter for Ollama
+# litellm.register_prompt_template(
+#     model="ollama/llama3.2-vision",
+#     initial_prompt_value="",
+#     roles={
+#             "user": {
+#                     "pre_message": "",
+#                     "post_message": ""
+#                 }
+#         },
+#     final_prompt_value="",
+# )
+
 def parse_api_response(response: litellm.ModelResponse, add_assistant_prefix: bool = False) -> dict[str, Any]:
     content = None
     try:
@@ -54,6 +83,8 @@ def parse_api_response(response: litellm.ModelResponse, add_assistant_prefix: bo
         content = try_to_extract_json_from_markdown_format(content)
         if not content:
             raise EmptyLLMResponseError(str(response))
+        if not content.startswith("```") and "```" in content:
+            content = content.split("```")[1]
         return commentjson.loads(content)
     except Exception as e:
         if content:
@@ -84,7 +115,7 @@ def fix_cutoff_json(json_string: str, error_position: int) -> dict[str, Any]:
     """
     LOG.info("Fixing cutoff JSON string.")
     try:
-        # Truncate the string to the error position
+        # Truncate the string to the error position         
         truncated_string = json_string[:error_position]
         # Find the last valid action
         last_valid_action_pos = truncated_string.rfind("},")

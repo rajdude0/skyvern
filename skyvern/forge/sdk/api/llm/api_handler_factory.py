@@ -1,7 +1,7 @@
 import dataclasses
 import json
 import time
-from asyncio import CancelledError
+from asyncio import CancelledError, timeout
 from typing import Any
 
 import litellm
@@ -103,6 +103,10 @@ class LLMAPIHandlerFactory:
                     ).encode("utf-8"),
                 )
             try:
+<<<<<<< Updated upstream
+=======
+                LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name, parameters=parameters)
+>>>>>>> Stashed changes
                 response = await router.acompletion(model=main_model_group, messages=messages, **parameters)
                 LOG.info("LLM API call successful", llm_key=llm_key, model=llm_config.model_name)
             except litellm.exceptions.APIError as e:
@@ -209,6 +213,7 @@ class LLMAPIHandlerFactory:
                 # TODO (kerem): add a timeout to this call
                 # TODO (kerem): add a retry mechanism to this call (acompletion_with_retries)
                 # TODO (kerem): use litellm fallbacks? https://litellm.vercel.app/docs/tutorials/fallbacks#how-does-completion_with_fallbacks-work
+<<<<<<< Updated upstream
                 LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name)
                 response = await litellm.acompletion(
                     model=llm_config.model_name,
@@ -216,6 +221,34 @@ class LLMAPIHandlerFactory:
                     timeout=settings.LLM_CONFIG_TIMEOUT,
                     **active_parameters,
                 )
+=======
+                LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name, parameters=active_parameters)
+                if llm_config.model_name.startswith("ollama"):
+                    #contents = [msg["content"] for msg in messages if msg["role"] == "user"][0]
+                    #prompt = "\n".join([content["text"] for content in contents if content["type"] == "text"])
+                    #image = "".join([content["image_url"] for content in contents if content["type"] == "image_url"])
+                    #encoded_image = image.split(",")[-1]
+                    # Build the payload
+                    payload = {
+                        "stream": False,
+                         "num_ctx": 24000
+                        }
+                    response = await litellm.acompletion(
+                            model=llm_config.model_name,
+                            messages=messages,
+                            timeout=SettingsManager.get_settings().LLM_CONFIG_TIMEOUT,
+                            **active_parameters,
+                            **payload
+                        )
+                else:
+                    response = await litellm.acompletion(
+                        model=llm_config.model_name,
+                        messages=messages,
+                        timeout=SettingsManager.get_settings().LLM_CONFIG_TIMEOUT,
+                        **active_parameters,
+                    )
+                LOG.info("Requesting ",  response=response)
+>>>>>>> Stashed changes
                 LOG.info("LLM API call successful", llm_key=llm_key, model=llm_config.model_name)
             except litellm.exceptions.APIError as e:
                 raise LLMProviderErrorRetryableTask(llm_key) from e
@@ -237,7 +270,7 @@ class LLMAPIHandlerFactory:
                     artifact_type=ArtifactType.LLM_RESPONSE,
                     data=response.model_dump_json(indent=2).encode("utf-8"),
                 )
-                llm_cost = litellm.completion_cost(completion_response=response)
+                llm_cost = 0 
                 prompt_tokens = response.get("usage", {}).get("prompt_tokens", 0)
                 completion_tokens = response.get("usage", {}).get("completion_tokens", 0)
                 await app.DATABASE.update_step(
