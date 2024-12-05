@@ -293,5 +293,5 @@ if settings.ENABLE_GEMINI:
 if settings.ENABLE_OLLAMA:
     LLMConfigRegistry.register_config(
             "OLLAMA_LOCAL",
-            LLMConfig("ollama/llama3.2-vision", [], litellm_params=LiteLLMParams(api_base="https://88fe-34-148-229-220.ngrok-free.app", model_info={"model_name": "ollama/llama3.2-vision"}, api_key=None, api_version=None), supports_vision=True, add_assistant_prefix=False, max_output_tokens=100000)
+            LLMConfig("ollama/llama3.2-vision", [], litellm_params=LiteLLMParams(api_base="https://localhost:11434", model_info={"model_name": "ollama/llama3.2-vision"}, api_key=None, api_version=None), supports_vision=True, add_assistant_prefix=False, max_output_tokens=100000)
             )
