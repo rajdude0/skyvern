@@ -103,10 +103,7 @@ class LLMAPIHandlerFactory:
                     ).encode("utf-8"),
                 )
             try:
-<<<<<<< Updated upstream
-=======
                 LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name, parameters=parameters)
->>>>>>> Stashed changes
                 response = await router.acompletion(model=main_model_group, messages=messages, **parameters)
                 LOG.info("LLM API call successful", llm_key=llm_key, model=llm_config.model_name)
             except litellm.exceptions.APIError as e:
@@ -213,15 +210,6 @@ class LLMAPIHandlerFactory:
                 # TODO (kerem): add a timeout to this call
                 # TODO (kerem): add a retry mechanism to this call (acompletion_with_retries)
                 # TODO (kerem): use litellm fallbacks? https://litellm.vercel.app/docs/tutorials/fallbacks#how-does-completion_with_fallbacks-work
-<<<<<<< Updated upstream
-                LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name)
-                response = await litellm.acompletion(
-                    model=llm_config.model_name,
-                    messages=messages,
-                    timeout=settings.LLM_CONFIG_TIMEOUT,
-                    **active_parameters,
-                )
-=======
                 LOG.info("Calling LLM API", llm_key=llm_key, model=llm_config.model_name, parameters=active_parameters)
                 if llm_config.model_name.startswith("ollama"):
                     #contents = [msg["content"] for msg in messages if msg["role"] == "user"][0]
@@ -236,7 +224,7 @@ class LLMAPIHandlerFactory:
                     response = await litellm.acompletion(
                             model=llm_config.model_name,
                             messages=messages,
-                            timeout=SettingsManager.get_settings().LLM_CONFIG_TIMEOUT,
+                            timeout=settings.LLM_CONFIG_TIMEOUT,
                             **active_parameters,
                             **payload
                         )
@@ -244,11 +232,10 @@ class LLMAPIHandlerFactory:
                     response = await litellm.acompletion(
                         model=llm_config.model_name,
                         messages=messages,
-                        timeout=SettingsManager.get_settings().LLM_CONFIG_TIMEOUT,
+                        timeout=settings.LLM_CONFIG_TIMEOUT,
                         **active_parameters,
                     )
                 LOG.info("Requesting ",  response=response)
->>>>>>> Stashed changes
                 LOG.info("LLM API call successful", llm_key=llm_key, model=llm_config.model_name)
             except litellm.exceptions.APIError as e:
                 raise LLMProviderErrorRetryableTask(llm_key) from e
