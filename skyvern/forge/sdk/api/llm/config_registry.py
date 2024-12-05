@@ -1,11 +1,8 @@
 import structlog
-<<<<<<< Updated upstream
 
 from skyvern.config import settings
-=======
 import litellm
 litellm.set_verbose=True
->>>>>>> Stashed changes
 from skyvern.forge.sdk.api.llm.exceptions import (
     DuplicateLLMConfigError,
     InvalidLLMConfigError,
@@ -51,21 +48,13 @@ class LLMConfigRegistry:
 # if none of the LLM providers are enabled, raise an error
 if not any(
     [
-<<<<<<< Updated upstream
         settings.ENABLE_OPENAI,
         settings.ENABLE_ANTHROPIC,
         settings.ENABLE_AZURE,
         settings.ENABLE_AZURE_GPT4O_MINI,
         settings.ENABLE_BEDROCK,
         settings.ENABLE_GEMINI,
-=======
-        SettingsManager.get_settings().ENABLE_OPENAI,
-        SettingsManager.get_settings().ENABLE_ANTHROPIC,
-        SettingsManager.get_settings().ENABLE_AZURE,
-        SettingsManager.get_settings().ENABLE_AZURE_GPT4O_MINI,
-        SettingsManager.get_settings().ENABLE_BEDROCK,
-        SettingsManager.get_settings().ENABLE_OLLAMA
->>>>>>> Stashed changes
+        settings.ENABLE_OLLAMA
     ]
 ):
     raise NoProviderEnabledError()
@@ -280,7 +269,6 @@ if settings.ENABLE_AZURE_GPT4O_MINI:
         ),
     )
 
-<<<<<<< Updated upstream
 if settings.ENABLE_GEMINI:
     LLMConfigRegistry.register_config(
         "GEMINI_PRO",
@@ -302,10 +290,8 @@ if settings.ENABLE_GEMINI:
             max_output_tokens=8192,
         ),
     )
-=======
-if SettingsManager.get_settings().ENABLE_OLLAMA:
+if settings.ENABLE_OLLAMA:
     LLMConfigRegistry.register_config(
             "OLLAMA_LOCAL",
             LLMConfig("ollama/llama3.2-vision", [], litellm_params=LiteLLMParams(api_base="https://88fe-34-148-229-220.ngrok-free.app", model_info={"model_name": "ollama/llama3.2-vision"}, api_key=None, api_version=None), supports_vision=True, add_assistant_prefix=False, max_output_tokens=100000)
             )
->>>>>>> Stashed changes
